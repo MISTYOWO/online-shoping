@@ -24,7 +24,7 @@ public class SkuController {
 
         // 处理默认图片
         String skuDefaultImg = pmsSkuInfo.getSkuDefaultImg();
-        if(StringUtils.isBlank(skuDefaultImg)){
+        if(!StringUtils.isBlank(skuDefaultImg)){
             pmsSkuInfo.setSkuDefaultImg(pmsSkuInfo.getSkuImageList().get(0).getImgUrl());
         }
 
