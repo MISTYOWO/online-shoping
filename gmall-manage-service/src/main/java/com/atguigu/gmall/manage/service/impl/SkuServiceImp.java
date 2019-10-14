@@ -100,6 +100,7 @@ public class SkuServiceImp implements SkuService {
                     jedis.setex("sku:"+SkuId+":info",60*3,JSON.toJSONString(""));
 
                 }
+                jedis.del("sku:"+SkuId+":info");
 
             }else{
                 // 设置失败，自旋（该线程在睡眠几秒后，重新尝试访问本方法）
@@ -114,5 +115,18 @@ public class SkuServiceImp implements SkuService {
         }
         jedis.close();
         return pmsSkuInfo;
+    }
+
+    @Override
+    public List<PmsSkuInfo> getAllSku(String catalog3Id) {
+        List<PmsSkuInfo> pmsSkuInfos = pmsSkuInfoMapper.selectAll();
+        for(PmsSkuInfo pmsSkuInfo: pmsSkuInfos){
+            String skuId = pmsSkuInfo.getId();
+            PmsSkuAttrValue pmsSkuAttrValue = new PmsSkuAttrValue();
+            pmsSkuAttrValue.setSkuId(skuId);
+            List<PmsSkuAttrValue> select = pmsSkuAttrValueMapper.select(pmsSkuAttrValue);
+            pmsSkuInfo.setSkuAttrValueList(select);
+        }
+        return pmsSkuInfos;
     }
 }

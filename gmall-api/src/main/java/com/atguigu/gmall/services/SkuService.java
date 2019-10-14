@@ -9,4 +9,5 @@ public interface SkuService {
     public void saveSkuInfo(PmsSkuInfo pmsSkuInfo);
     public List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String productId);
     public PmsSkuInfo getSkuById(String SkuId);
+    List<PmsSkuInfo> getAllSku(String catalog3Id);
 }
