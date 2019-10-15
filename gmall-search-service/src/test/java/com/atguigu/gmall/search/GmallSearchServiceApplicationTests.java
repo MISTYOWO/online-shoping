@@ -5,9 +5,14 @@ import com.atguigu.gmall.beans.PmsSearchSkuInfo;
 import com.atguigu.gmall.beans.PmsSkuInfo;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
@@ -15,23 +20,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import com.atguigu.gmall.services.SkuService;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-
 @SpringBootTest
-
 public class GmallSearchServiceApplicationTests {
     @Reference
     SkuService skuService;
-
+    @Autowired
+    JestClient jestClient;
 
     @Test
     public void contextLoads() throws IOException {
-        RestClient restClient = RestClient.builder(new HttpHost("localhost",9200,"http")).build();
+        put();
+
+
+    }
+    public void put() throws IOException {
         List<PmsSkuInfo> pmsSkuInfoList = new ArrayList<>();
         pmsSkuInfoList = skuService.getAllSku("61");
         List<PmsSearchSkuInfo> pmsSearchSkuInfos = new ArrayList<>();
@@ -40,10 +47,9 @@ public class GmallSearchServiceApplicationTests {
             BeanUtils.copyProperties(pmsSkuInfo,pmsSearchSkuInfo);
             pmsSearchSkuInfos.add(pmsSearchSkuInfo);
         }
-        restClient.close();
         for(PmsSearchSkuInfo pmsSearchSkuInfo:pmsSearchSkuInfos){
-            Index post = new Index.Builder(pmsSearchSkuInfo).index("pmsskuinfo").id(pmsSearchSkuInfo.getId()).build();
-
+            Index post = new Index.Builder(pmsSearchSkuInfo).index("gmall0105").type("PmsSkuInfo").id(pmsSearchSkuInfo.getId()).build();
+            jestClient.execute(post);
         }
     }
 }
